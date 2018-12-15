@@ -1,0 +1,38 @@
+#pragma METAINFO("last of us remastered keyboard slow walk toggle", 1, 0, "mdnpascual")
+#include <keyboard.gph>
+
+#define Toggle_Key  KEY_C
+
+bool Toggle = FALSE;
+bool ToggleKeyPressed=FALSE;
+
+main {
+	
+	// when key is not active:  reset Pressed flag to allow toggle again
+    if (!key_status(Toggle_Key)) ToggleKeyPressed=FALSE; 
+		
+	if(key_status(Toggle_Key) && !ToggleKeyPressed){ 
+		
+		Toggle = !Toggle;
+		ToggleKeyPressed=TRUE;
+		
+		if (Toggle){
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, -1.0, 0);
+			led_set(LED_3, 0.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}else{
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, 0.0, 0);
+			led_set(LED_3, -1.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}
+		
+	}
+	
+	if (Toggle && get_val(STICK_2_Y) == -100.0){	set_val(STICK_2_Y, -40); }
+	if (Toggle && get_val(STICK_2_X) == -100.0){	set_val(STICK_2_X, -40); }
+	if (Toggle && get_val(STICK_2_Y) == 100.0){		set_val(STICK_2_Y, 40); }
+	if (Toggle && get_val(STICK_2_X) == 100.0){		set_val(STICK_2_X, 40); }
+	
+}

@@ -1,0 +1,34 @@
+#pragma METAINFO("Smash", 1, 0, "mdnpascual")
+
+//Maximum gap between tap to register double tap
+int Double_Tap_Gap = 150;
+
+bool but12Active = FALSE;
+bool but13Active = FALSE;
+ 
+main {
+	
+	if(get_val(BUTTON_12) && (time_release(BUTTON_12) < Double_Tap_Gap || but12Active)) {
+		set_val(BUTTON_12, 0.0);
+        set_val(STICK_2_X, -100.0);
+		but12Active = TRUE;
+	}else if(!get_val(BUTTON_12) && but12Active){
+		but12Active = FALSE;
+	}
+	else if(get_val(BUTTON_13) && (time_release(BUTTON_13) < Double_Tap_Gap || but13Active)) {
+		set_val(BUTTON_13, 0.0);
+        set_val(STICK_2_X, 100.0);
+		but13Active = TRUE;
+	}else if(!get_val(BUTTON_13) && but13Active){
+		but13Active = FALSE;
+	}
+	else if(get_val(BUTTON_12)) {
+        set_val(BUTTON_12, 0.0);
+        set_val(STICK_2_X, -50.0);
+    }else if(get_val(BUTTON_13)) {
+        set_val(BUTTON_13, 0.0);
+        set_val(STICK_2_X, 50.0);
+    }
+
+}
+

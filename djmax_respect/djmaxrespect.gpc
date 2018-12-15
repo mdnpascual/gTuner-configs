@@ -1,0 +1,120 @@
+#pragma METAINFO("djmax analogue stick", 1, 3, "mdnpascual")
+
+#include <keyboard.gph>
+
+#define Toggle_Key	KEY_M
+#define Mode4K 		KEY_4
+#define Mode5K		KEY_5
+#define Mode6K		KEY_6
+
+#define iToggleMax 3
+
+uint8 iToggle=0;
+
+bool ToggleKeyPressed=FALSE;
+bool ToggleMode4K=FALSE;
+bool ToggleMode5K=FALSE;
+bool ToggleMode6K=FALSE;
+
+init {
+	led_set(LED_1, 0.0, 0);
+	led_set(LED_2, 0.0, 0);
+	led_set(LED_3, -1.0, 0);
+	led_set(LED_4, 0.0, 0);
+}
+
+
+main {
+	
+	// when key is not active:  reset Pressed flag to allow toggle again
+    if (!key_status(Toggle_Key)) ToggleKeyPressed=FALSE; 
+	if (!key_status(Mode4K)) ToggleMode4K=FALSE; 
+	if (!key_status(Mode5K)) ToggleMode5K=FALSE; 
+	if (!key_status(Mode6K)) ToggleMode6K=FALSE; 
+		
+	if(key_status(Toggle_Key) && !ToggleKeyPressed){ 
+		
+		ToggleKeyPressed=TRUE;
+		iToggle=(iToggle+1) % clamp(iToggleMax,2,255);
+		
+		changeMode();
+		
+	}
+	
+	// CHANGE MODE BY NUMBER
+	if(key_status(Mode4K) && !ToggleMode4K){
+		ToggleMode4K=TRUE;
+		iToggle=2;
+		changeMode();
+	}else if(key_status(Mode5K) && !ToggleMode5K){
+		ToggleMode5K=TRUE;
+		iToggle=1;
+		changeMode();
+	}else if(key_status(Mode6K) && !ToggleMode6K){
+		ToggleMode6K=TRUE;
+		iToggle=0;
+		changeMode();
+	}
+		
+	// ANALOGUE STICKS
+	if(get_val(BUTTON_7) && get_val(BUTTON_4)){
+		set_val(STICK_2_X, -25.0);
+		set_val(STICK_2_Y, -100.0);
+		set_val(STICK_1_X, 90);
+		set_val(STICK_1_Y, -60.0);
+	}else if(get_val(BUTTON_7)) {
+		set_val(STICK_2_X, -25.0);
+		set_val(STICK_2_Y, -100.0);
+    }else if (get_val(BUTTON_4)) {
+		set_val(STICK_1_X, 90);
+		set_val(STICK_1_Y, -60.0);
+	}
+	
+	// 5B MODE
+	if (iToggle==1 && get_val(BUTTON_13)){	
+		set_val(BUTTON_13, 0);
+		set_val(BUTTON_17, 100);
+	}
+	
+	// 4B MODE
+	if(iToggle==2 && get_val(BUTTON_13) && get_val(BUTTON_17)){
+		set_val(BUTTON_13, 0);
+		set_val(BUTTON_17, 0);
+		set_val(STICK_2_X, -25.0);
+		set_val(STICK_2_Y, -100.0);
+		set_val(STICK_1_X, 90);
+		set_val(STICK_1_Y, -60.0);
+	}else if(iToggle==2 && get_val(BUTTON_13)){
+		set_val(BUTTON_13, 0);
+		set_val(STICK_2_X, -25.0);
+		set_val(STICK_2_Y, -100.0);
+	}else if(iToggle==2 && get_val(BUTTON_17)){
+		set_val(BUTTON_17, 0);
+		set_val(STICK_1_X, 90);
+		set_val(STICK_1_Y, -60.0);
+	}
+	
+}
+
+void changeMode() {
+	switch(iToggle) {
+		case 0:
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, 0.0, 0);
+			led_set(LED_3, -1.0, 0);
+			led_set(LED_4, 0.0, 0);
+			break;
+		case 1:
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, -1.0, 0);
+			led_set(LED_3, 0.0, 0);
+			led_set(LED_4, 0.0, 0);
+			break;
+		case 2:
+			led_set(LED_1, -1.0, 0);
+			led_set(LED_2, 0.0, 0);
+			led_set(LED_3, 0.0, 0);
+			led_set(LED_4, 0.0, 0);
+			break;
+    }
+}
