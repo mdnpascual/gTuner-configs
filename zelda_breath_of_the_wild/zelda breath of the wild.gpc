@@ -1,0 +1,13 @@
+#pragma METAINFO("mdnpascual", 1, 0, "zelda breath of the wild")
+
+#include <keyboard.gph>
+
+#define Aim_Key1  KEY_C
+
+main {
+	
+	if(get_val(BUTTON_4) || get_val(BUTTON_5)){
+		
+	}
+
+}
