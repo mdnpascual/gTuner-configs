@@ -1,0 +1,13 @@
+#pragma METAINFO("Gravity Rush", 1, 0, "mdnpascual")
+
+#include <mouse.gph>
+#include <keyboard.gph>
+
+main {
+	
+	if(key_status(KEY_LEFTSHIFT) && mouse_status(MBUTTON_4)){
+		set_val(BUTTON_8, 100);
+		set_val(BUTTON_5, 0);
+	}
+
+}
