@@ -1,0 +1,427 @@
+#pragma METAINFO("Days Gone Inventory Wheel Helper", 1, 3, "mdnpascual")
+
+#include <mouse.gph>
+#include <keyboard.gph>
+
+uint32 timer;
+uint32 KEY_I_last_pressed;
+uint32 KEY_M_last_pressed;
+uint32 KEY_PAGEDOWN_last_pressed;
+uint32 KEY_PAGEUP_last_pressed;
+uint32 MOUSE_last_activity;
+fix32 accumulator;
+fix32 speed;
+fix32 speed2;
+fix32 aimSens;
+
+uint8 H_Pressed;
+uint8 G_Pressed;
+uint8 T_Pressed;
+uint8 F_Pressed;
+
+init {
+	KEY_I_last_pressed = system_time();
+	KEY_M_last_pressed = system_time();
+	KEY_PAGEDOWN_last_pressed = system_time();
+	KEY_PAGEUP_last_pressed = system_time();
+	MOUSE_last_activity = system_time();
+	accumulator = 0.0;
+	speed = 0.4;
+	speed2 = 0.4;
+	aimSens = 1.5;
+	H_Pressed = 0;
+	G_Pressed = 0;
+	T_Pressed = 0;
+	F_Pressed = 0;
+}
+
+main {
+	
+	timer = system_time();
+	
+	//if (timer % 100 == 0){
+	//	printf("%f", accumulator);
+	//}
+	
+	
+	// SURVIVAL WHEEL
+	// MELEE
+	if (key_status(KEY_1)){
+		set_val(BUTTON_7, 100.0);
+		if (is_release(STICK_1_X) && time_release(STICK_1_X) > 500){
+			set_val(STICK_1_Y, -100.0);
+			accumulator = 0.0;
+		}else{
+			if (mouse_status(MOUSE_X) > 1){
+				accumulator = clamp(accumulator + speed, -60.0, 60.0);
+			}else if (mouse_status(MOUSE_X) < 1){
+				accumulator = clamp(accumulator - speed, -60.0, 60.0);
+			}
+			set_val(STICK_1_Y, -95.0);
+			set_val(STICK_1_X, clamp(accumulator, -60.0, 60.0));
+		}
+	}
+	
+	// HANDGUN
+	if (key_status(KEY_2)){
+		set_val(BUTTON_7, 100.0);
+		if (is_release(STICK_1_Y) && time_release(STICK_1_Y) > 500){
+			set_val(STICK_1_X, 100.0);
+			accumulator = 0.0;
+		}else{
+			if (mouse_status(MOUSE_Y) > 1){
+				accumulator = clamp(accumulator + speed, -60.0, 60.0);
+			}else if (mouse_status(MOUSE_Y) < 1){
+				accumulator = clamp(accumulator - speed, -60.0, 60.0);
+			}
+			set_val(STICK_1_X, 95.0);
+			set_val(STICK_1_Y, clamp(accumulator, -60.0, 60.0));
+		}
+	}
+	
+	// MAIN
+	if (key_status(KEY_3)){
+		set_val(BUTTON_7, 100.0);
+		if (is_release(STICK_1_Y) && time_release(STICK_1_Y) > 500){
+			set_val(STICK_1_X, -100.0);
+			accumulator = 0.0;
+		}else{
+			if (mouse_status(MOUSE_Y) > 1){
+				accumulator = clamp(accumulator + speed, -60.0, 60.0);
+			}else if (mouse_status(MOUSE_Y) < 1){
+				accumulator = clamp(accumulator - speed, -60.0, 60.0);
+			}
+			set_val(STICK_1_X, -95.0);
+			set_val(STICK_1_Y, clamp(accumulator, -60.0, 60.0));
+		}
+	}
+	
+	// SPECIAL
+	if (key_status(KEY_4)){
+		set_val(BUTTON_7, 100.0);
+		if (is_release(STICK_1_X) && time_release(STICK_1_X) > 500){
+			set_val(STICK_1_Y, 100.0);
+			accumulator = 0.0;
+		}else{
+			if (mouse_status(MOUSE_X) > 1){
+				accumulator = clamp(accumulator + speed, -60.0, 60.0);
+			}else if (mouse_status(MOUSE_X) < 1){
+				accumulator = clamp(accumulator - speed, -60.0, 60.0);
+			}
+			set_val(STICK_1_Y, 95.0);
+			set_val(STICK_1_X, clamp(accumulator, -60.0, 60.0));
+		}
+	}
+	
+	// OLD FORMAT
+	//if (key_status(KEY_4)){
+	//	set_val(BUTTON_7, 100.0);
+	//	if (is_release(STICK_1_X) && time_release(STICK_1_X) > 100){
+	//		set_val(STICK_1_Y, 100.0);
+	//	}else{
+	//		set_val(STICK_1_Y, 95.0);
+	//		set_val(STICK_1_X, clamp(get_val(STICK_1_X), -60.0, 60.0));
+	//	}
+	//}
+	
+	// HEALTH
+	if (key_status(KEY_H)){
+		if(!H_Pressed) H_Pressed = mouse_status(MREPORT_UPDATED)|1;
+		
+		set_val(BUTTON_7, 100.0);
+		if (mouse_status(MREPORT_UPDATED) != 0){
+			MOUSE_last_activity = system_time();
+		}
+		
+		if (system_time() > MOUSE_last_activity + 500){
+			set_val(STICK_1_X, -75.0);
+			set_val(STICK_1_Y, -75.0);
+			accumulator = -75.0;
+		}else{
+			if (mouse_status(MOUSE_Y) > 1){
+				accumulator = clamp(accumulator + speed2, -108.0, -20.0);
+			}else if (mouse_status(MOUSE_Y) < -1){
+				accumulator = clamp(accumulator - speed2, -108.0, -20.0);
+			}
+			set_val(STICK_1_X, convertVal(clamp(accumulator, -108.0, -20.0)));
+			set_val(STICK_1_Y, clamp(accumulator, -100.0, -20.0));
+		}
+		
+	}else{
+		H_Pressed = 0;
+	}
+	
+	// GRENADE
+	if (key_status(KEY_G)){
+		if(!G_Pressed) G_Pressed = mouse_status(MREPORT_UPDATED)|1;
+		
+		set_val(BUTTON_7, 100.0);
+		if (mouse_status(MREPORT_UPDATED) != 0){
+			MOUSE_last_activity = system_time();
+		}
+		
+		if (system_time() > MOUSE_last_activity + 500){
+			set_val(STICK_1_X, 75.0);
+			set_val(STICK_1_Y, -75.0);
+			accumulator = -75.0;
+		}else{
+			if (mouse_status(MOUSE_Y) > 1){
+				accumulator = clamp(accumulator + speed2, -108.0, -20.0);
+			}else if (mouse_status(MOUSE_Y) < -1){
+				accumulator = clamp(accumulator - speed2, -108.0, -20.0);
+			}
+			set_val(STICK_1_X, convertVal(clamp(accumulator, -108.0, -20.0)) * -1.0);
+			set_val(STICK_1_Y, clamp(accumulator, -100.0, -20.0));
+		}
+		
+	}else{
+		G_Pressed = 0;
+	}
+	
+	// DISTRACTION
+	if (key_status(KEY_F)){
+		if(!F_Pressed) F_Pressed = mouse_status(MREPORT_UPDATED)|1;
+		
+		set_val(BUTTON_7, 100.0);
+		if (mouse_status(MREPORT_UPDATED) != 0){
+			MOUSE_last_activity = system_time();
+		}
+		
+		if (system_time() > MOUSE_last_activity + 500){
+			set_val(STICK_1_X, -75.0);
+			set_val(STICK_1_Y, 75.0);
+			accumulator = -75.0;
+		}else{
+			if (mouse_status(MOUSE_Y) > 1){
+				accumulator = clamp(accumulator - speed2, -108.0, -20.0);
+			}else if (mouse_status(MOUSE_Y) < -1){
+				accumulator = clamp(accumulator + speed2, -108.0, -20.0);
+			}
+			set_val(STICK_1_X, convertVal(clamp(accumulator, -108.0, -20.0)));
+			set_val(STICK_1_Y, clamp(accumulator, -100.0, -20.0) * -1.0);
+		}
+		
+	}else{
+		F_Pressed = 0;
+	}
+	
+	// TRAP
+	if (key_status(KEY_T)){
+		if(!T_Pressed) T_Pressed = mouse_status(MREPORT_UPDATED)|1;
+		
+		set_val(BUTTON_7, 100.0);
+		if (mouse_status(MREPORT_UPDATED) != 0){
+			MOUSE_last_activity = system_time();
+		}
+		
+		if (system_time() > MOUSE_last_activity + 500){
+			set_val(STICK_1_X, 75.0);
+			set_val(STICK_1_Y, 75.0);
+			accumulator = -75.0;
+		}else{
+			if (mouse_status(MOUSE_Y) > 1){
+				accumulator = clamp(accumulator - speed2, -108.0, -20.0);
+			}else if (mouse_status(MOUSE_Y) < -1){
+				accumulator = clamp(accumulator + speed2, -108.0, -20.0);
+			}
+			set_val(STICK_1_X, convertVal(clamp(accumulator, -108.0, -20.0)) * -1.0);
+			set_val(STICK_1_Y, clamp(accumulator, -100.0, -20.0) * -1.0);
+		}
+		
+	}else{
+		T_Pressed = 0;
+	}
+	
+	// PAD
+	if(key_status(KEY_I) || (KEY_I_last_pressed + 100 > timer)){
+		combo_run(Pad_Left);
+		if(key_status(KEY_I)){
+			KEY_I_last_pressed = system_time();
+		}
+	}else{
+		combo_stop(Pad_Left);
+	}
+	
+	if(key_status(KEY_M) || (KEY_M_last_pressed + 100 > timer)){
+		combo_run(Pad_Right);
+		if(key_status(KEY_M)){
+			KEY_M_last_pressed = system_time();
+		}
+	}else{
+		combo_stop(Pad_Right);
+	}
+	
+	if(key_status(KEY_PAGEUP) || (KEY_PAGEUP_last_pressed + 100 > timer)){
+		combo_run(Pad_Up);
+		if(key_status(KEY_PAGEUP)){
+			KEY_PAGEUP_last_pressed = system_time();
+		}
+	}else{
+		combo_stop(Pad_Up);
+	}
+	
+	if(key_status(KEY_PAGEDOWN) || (KEY_PAGEDOWN_last_pressed + 100 > timer)){
+		combo_run(Pad_Down);
+		if(key_status(KEY_PAGEDOWN)){
+			KEY_PAGEDOWN_last_pressed = system_time();
+		}
+	}
+	else{
+		combo_stop(Pad_Down);
+	}
+
+}
+
+fix32 convertVal(fix32 val){
+	fix32 result = 0.0;
+	// -37.4
+	if (val >= -20.0){
+		result = -100.0;
+	}else{
+		if (val < 0.0){ val *= -1.0; }
+		result = ((1.403297902 * 0.01 * pow(val, 2.0)) + (9.022848479 * 0.1 * -val) + (-83.58815467));
+	}
+	return result;
+}
+
+combo Pad_Up {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.31);
+    set_val(POINT_1_Y, 68.33);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.83);
+    set_val(POINT_1_Y, 63.87);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -8.91);
+    set_val(POINT_1_Y, 20.72);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.93);
+    set_val(POINT_1_Y, -30.07);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 1.62);
+    set_val(POINT_1_Y, -80.45);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+}
+
+combo Pad_Down {
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 16.62);
+    set_val(POINT_1_Y, -72.16);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 15.06);
+    set_val(POINT_1_Y, -44.53);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 14.33);
+    set_val(POINT_1_Y, -5.21);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 14.43);
+    set_val(POINT_1_Y, 29.01);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 15.27);
+    set_val(POINT_1_Y, 63.44);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 15.79);
+    set_val(POINT_1_Y, 82.57);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 15.79);
+    set_val(POINT_1_Y, 82.57);
+    wait(10);
+}
+
+combo Pad_Left {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 24.02);
+    set_val(POINT_1_Y, -4.36);
+    set_val(ACCEL_1_Y, 13.50);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 19.54);
+    set_val(POINT_1_Y, -12.43);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 5.37);
+    set_val(POINT_1_Y, -26.67);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -16.73);
+    set_val(POINT_1_Y, -33.90);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -43.30);
+    set_val(POINT_1_Y, -27.52);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -73.94);
+    set_val(POINT_1_Y, -10.73);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -94.58);
+    set_val(POINT_1_Y, 8.40);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, -94.58);
+    set_val(POINT_1_Y, 8.40);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+}
+
+combo Pad_Right {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -4.53);
+    set_val(POINT_1_Y, 22.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -3.49);
+    set_val(POINT_1_Y, 21.15);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 2.45);
+    set_val(POINT_1_Y, 17.53);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 21.31);
+    set_val(POINT_1_Y, 8.40);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 47.58);
+    set_val(POINT_1_Y, 1.38);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 76.76);
+    set_val(POINT_1_Y, -1.81);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 89.79);
+    set_val(POINT_1_Y, 0.11);
+    wait(10);
+	set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 89.79);
+    set_val(POINT_1_Y, 0.11);
+    wait(10);
+	
+}
+
