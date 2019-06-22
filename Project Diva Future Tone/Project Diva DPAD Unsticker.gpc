@@ -1,0 +1,82 @@
+#pragma METAINFO("Project Diva DPAD Unsticker", 1, 0, "mdnpascual")
+
+#include <ps4.gph>
+#include <keyboard.gph>
+
+bool upthendown = FALSE;
+bool downthenup = FALSE;
+bool leftthenright = FALSE;
+bool rightthenleft = FALSE;
+
+main {
+	
+	// SPACEBAR
+	if (key_status(KEY_SPACEBAR)){
+		set_val(PS4_L1, 100.0);
+		set_val(PS4_L2, 100.0);
+		set_val(PS4_R1, 100.0);
+		set_val(PS4_R2, 100.0);
+		//if(port_status(0, PROTOCOL_PS4, 0))
+	}
+	
+	// UP THEN DOWN
+	if (is_active(BUTTON_10) && !downthenup){
+		upthendown = TRUE;
+		set_val(PS4_UP, 100.0);
+		if (is_active(BUTTON_11)){
+			set_val(PS4_DOWN, 0.0);
+			set_val(PS4_CROSS, 100.0);
+			if(is_active(BUTTON_16)){
+				set_val(PS4_R1, 100.0);
+			}
+		}
+	}else{
+		upthendown = FALSE;
+	}
+	
+	// DOWN THEN UP
+	if (is_active(BUTTON_11) && !upthendown){
+		downthenup = TRUE;
+		set_val(PS4_DOWN, 100.0);
+		if (is_active(BUTTON_10)){
+			set_val(PS4_UP, 0.0);
+			set_val(PS4_TRIANGLE, 100.0);
+			if(is_active(BUTTON_14)){
+				set_val(PS4_R2, 100.0);
+			}
+		}
+	}else{
+		downthenup = FALSE;
+	}
+	
+	// LEFT THEN RIGHT
+	if (is_active(BUTTON_12) && !rightthenleft){
+		leftthenright = TRUE;
+		set_val(PS4_LEFT, 100.0);
+		if (is_active(BUTTON_13)){
+			set_val(PS4_RIGHT, 0.0);
+			set_val(PS4_CIRCLE, 100.0);
+			if(is_active(BUTTON_15)){
+				set_val(PS4_L1, 100.0);
+			}
+		}
+	}else{
+		leftthenright = FALSE;
+	}
+	
+	// RIGHT THEN LEFT
+	if (is_active(BUTTON_13) && !leftthenright){
+		rightthenleft = TRUE;
+		set_val(PS4_RIGHT, 100.0);
+		if (is_active(BUTTON_12)){
+			set_val(PS4_LEFT, 0.0);
+			set_val(PS4_SQUARE, 100.0);
+			if(is_active(BUTTON_17)){
+				set_val(PS4_L2, 100.0);
+			}
+		}
+	}else{
+		rightthenleft = FALSE;
+	}
+
+}
