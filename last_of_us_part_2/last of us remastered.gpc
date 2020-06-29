@@ -1,0 +1,106 @@
+#pragma METAINFO("last of us remastered keyboard slow walk toggle", 1, 2, "mdnpascual")
+#include <keyboard.gph>
+
+#define Toggle_Key  KEY_C
+
+bool Toggle;
+bool ToggleKeyPressed;
+uint32 BUTTON_19_last_pressed;
+uint32 timer;
+
+init {
+	BUTTON_19_last_pressed = system_time();
+	Toggle = FALSE;
+	ToggleKeyPressed=FALSE;
+}
+
+main {
+	
+	timer = system_time();
+	
+	// when key is not active:  reset Pressed flag to allow toggle again
+    if (!key_status(Toggle_Key)) ToggleKeyPressed=FALSE; 
+		
+	if(key_status(Toggle_Key) && !ToggleKeyPressed){ 
+		
+		Toggle = !Toggle;
+		ToggleKeyPressed=TRUE;
+		
+		if (Toggle){
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, -1.0, 0);
+			led_set(LED_3, 0.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}else{
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, 0.0, 0);
+			led_set(LED_3, -1.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}
+		
+	}
+	
+	// CROUCH TOGGLE
+	if (Toggle && get_val(STICK_2_Y) == -100.0){	set_val(STICK_2_Y, -40); }
+	if (Toggle && get_val(STICK_2_X) == -100.0){	set_val(STICK_2_X, -40); }
+	if (Toggle && get_val(STICK_2_Y) == 100.0){		set_val(STICK_2_Y, 40); }
+	if (Toggle && get_val(STICK_2_X) == 100.0){		set_val(STICK_2_X, 40); }
+	
+	// FLASHLIGHT SHAKE
+	if(is_active(BUTTON_6) && time_active(BUTTON_6) >= 150) {
+		
+		set_val(ACCEL_1_X, clamp(get_val(STICK_1_X), -50.0, 50.0));
+		set_val(ACCEL_1_Y, clamp(get_val(STICK_1_Y), -50.0, 50.0));
+		set_val(ACCEL_1_Z, clamp((get_val(STICK_1_Y) * rand()) + (get_val(STICK_1_X) * rand()), -50.0, 50.0));
+		
+		set_val(GYRO_1_X, clamp(get_val(STICK_1_Y) * rand(), -50.0, 50.0));
+		set_val(GYRO_1_Y, clamp(get_val(STICK_1_X) * rand(), -50.0, 50.0));
+		set_val(GYRO_1_Z, clamp((get_val(STICK_1_Y) * rand()) + (get_val(STICK_1_X) * rand()), -50.0, 50.0));
+		
+		set_val(STICK_1_Y, 0);
+		set_val(STICK_1_X, 0);
+		
+    }
+	
+	// GUITAR STRUM
+	if(get_val(BUTTON_19) == 100.0 || (BUTTON_19_last_pressed + 100 > timer)){
+		combo_run(Pad_Up);
+		if(get_val(BUTTON_19) == 100.0){
+			BUTTON_19_last_pressed = system_time();
+		}
+	}else{
+		combo_stop(Pad_Up);
+	}
+	
+}
+
+combo Pad_Up {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.31);
+    set_val(POINT_1_Y, 68.33);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.83);
+    set_val(POINT_1_Y, 63.87);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -8.91);
+    set_val(POINT_1_Y, 20.72);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.93);
+    set_val(POINT_1_Y, -30.07);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 1.62);
+    set_val(POINT_1_Y, -80.45);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+}
