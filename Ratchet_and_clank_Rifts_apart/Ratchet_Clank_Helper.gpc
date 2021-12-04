@@ -1,0 +1,62 @@
+#pragma METAINFO("Ratchet_Clank_Helper", 1, 0, "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+bool charging = FALSE;
+
+main {
+	
+	fix32 aimX = get_val(STICK_1_X);
+	fix32 aimY = get_val(STICK_1_Y);
+	
+	// DIAGONAL MOVEMENT
+	if(key_status(KEY_A)){
+		if(key_status(KEY_W)){
+			set_val(STICK_2_X, -75.00);
+			set_val(STICK_2_Y, -75.00);
+		} else if(key_status(KEY_S)){
+			set_val(STICK_2_X, -75.00);
+			set_val(STICK_2_Y, 75.00);
+		}
+	} else if(key_status(KEY_D)){
+		if(key_status(KEY_W)){
+			set_val(STICK_2_X, 75.00);
+			set_val(STICK_2_Y, -75.00);
+		} else if(key_status(KEY_S)){
+			set_val(STICK_2_X, 75.00);
+			set_val(STICK_2_Y, 75.00);
+		}
+	}
+	
+	// DIAGONAL AIM
+	if(abs(aimX) + abs(aimY) > 150.0){
+		fix32 total = abs(aimX) + abs(aimY);
+		set_val(STICK_1_X, (aimX / total) * 150.00);
+		set_val(STICK_1_Y, (aimY / total) * 150.00);
+	}
+	
+	// AIMING
+	if(mouse_status(MBUTTON_2)){
+		if(mouse_status(MBUTTON_1)){
+			set_val(BUTTON_5, 100.00);
+			set_val(BUTTON_17, 0.0);
+		}
+		
+		// CHARGE AIM
+		if(mouse_status(MBUTTON_3)){
+			set_val(BUTTON_5, 40.00);
+			set_val(BUTTON_17, 0.0);
+			charging = TRUE;
+		// RELEASE CHARGE
+		}else if(charging && !mouse_status(MBUTTON_3)){
+			charging = FALSE;
+			combo_run(releaseCharge);
+		}
+	}
+}
+
+combo releaseCharge {
+	set_val(BUTTON_5, 100.00);
+	set_val(BUTTON_17, 0.0);
+	wait(25);
+}
