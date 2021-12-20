@@ -1,13 +1,149 @@
-#pragma METAINFO("Gravity Rush", 1, 0, "mdnpascual")
+#pragma METAINFO("Gravity Rush Script Helper", 1, 3, "mdnpascual")
 
 #include <mouse.gph>
 #include <keyboard.gph>
 
+uint32 timer;
+uint32 KEY_1_last_pressed;
+uint32 KEY_2_last_pressed;
+uint32 KEY_3_last_pressed;
+
+init {
+	KEY_1_last_pressed = system_time();
+	KEY_2_last_pressed = system_time();
+	KEY_3_last_pressed = system_time();
+}
+
 main {
+	
+	timer = system_time();
 	
 	if(key_status(KEY_LEFTSHIFT) && mouse_status(MBUTTON_4)){
 		set_val(BUTTON_8, 100);
 		set_val(BUTTON_5, 0);
 	}
+	
+	if(key_status(KEY_1) || (KEY_1_last_pressed + 200 > timer)){
+		combo_run(Pad_Tap);
+		if(key_status(KEY_1)){
+			KEY_1_last_pressed = system_time();
+		}
+	}else{
+		combo_stop(Pad_Tap);
+	}
+	
+	if(key_status(KEY_2) || (KEY_2_last_pressed + 200 > timer)){
+		combo_run(Pad_Up);
+		if(key_status(KEY_2)){
+			KEY_2_last_pressed = system_time();
+		}
+	}else{
+		combo_stop(Pad_Up);
+	}
+	
+	if(key_status(KEY_3) || (KEY_3_last_pressed + 200 > timer)){
+		combo_run(Pad_Down);
+		if(key_status(KEY_3)){
+			KEY_3_last_pressed = system_time();
+		}
+	}
+	else{
+		combo_stop(Pad_Down);
+	}
 
 }
+
+combo Pad_Tap {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 9.85);
+    set_val(POINT_1_Y, 92.77);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 10.27);
+    set_val(POINT_1_Y, 92.35);
+    wait(20);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 10.47);
+    set_val(POINT_1_Y, 92.35);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 10.79);
+    set_val(POINT_1_Y, 92.35);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 11.31);
+    set_val(POINT_1_Y, 92.77);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 11.93);
+    set_val(POINT_1_Y, 92.77);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 11.93);
+    set_val(POINT_1_Y, 92.77);
+    wait(10);
+}
+
+combo Pad_Up {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.31);
+    set_val(POINT_1_Y, 68.33);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.83);
+    set_val(POINT_1_Y, 63.87);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -8.91);
+    set_val(POINT_1_Y, 20.72);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.93);
+    set_val(POINT_1_Y, -30.07);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 1.62);
+    set_val(POINT_1_Y, -80.45);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+}
+
+combo Pad_Down {
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 16.62);
+    set_val(POINT_1_Y, -72.16);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 15.06);
+    set_val(POINT_1_Y, -44.53);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 14.33);
+    set_val(POINT_1_Y, -5.21);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 14.43);
+    set_val(POINT_1_Y, 29.01);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 15.27);
+    set_val(POINT_1_Y, 63.44);
+    wait(10);
+	set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 15.79);
+    set_val(POINT_1_Y, 82.57);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 15.79);
+    set_val(POINT_1_Y, 82.57);
+    wait(5);
+}
+
