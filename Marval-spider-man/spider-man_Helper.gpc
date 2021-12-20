@@ -1,0 +1,96 @@
+#pragma METAINFO("SpiderMan_Helper", 1, 1, "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+main {
+	
+	fix32 aimX = get_val(STICK_1_X);
+	fix32 aimY = get_val(STICK_1_Y);
+	
+	// DIAGONAL MOVEMENT
+	if(key_status(KEY_A)){
+		if(key_status(KEY_W)){
+			set_val(STICK_2_X, -75.00);
+			set_val(STICK_2_Y, -75.00);
+		} else if(key_status(KEY_S)){
+			set_val(STICK_2_X, -75.00);
+			set_val(STICK_2_Y, 75.00);
+		}
+	} else if(key_status(KEY_D)){
+		if(key_status(KEY_W)){
+			set_val(STICK_2_X, 75.00);
+			set_val(STICK_2_Y, -75.00);
+		} else if(key_status(KEY_S)){
+			set_val(STICK_2_X, 75.00);
+			set_val(STICK_2_Y, 75.00);
+		}
+	// SOCIAL FEED
+	} else if(key_status(KEY_M)){
+		combo_run(Pad_Left);
+	}
+	
+	// DIAGONAL AIM
+	if(abs(aimX) + abs(aimY) > 150.0){
+		fix32 total = abs(aimX) + abs(aimY);
+		set_val(STICK_1_X, (aimX / total) * 150.00);
+		set_val(STICK_1_Y, (aimY / total) * 150.00);
+	}
+	
+	// AIMING
+	if(mouse_status(MBUTTON_2)){
+		if(mouse_status(MBUTTON_1)){
+			// NONE FOR NOW
+		}
+		
+		// CHARGE AIM
+		if(mouse_status(MBUTTON_3)){
+			set_val(BUTTON_4, 0.00);
+			set_val(BUTTON_7, 0.00);
+			set_val(BUTTON_8, 100.00);
+			set_val(BUTTON_5, 100.00);
+		}
+	}
+}
+
+combo Pad_Left {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 24.02);
+    set_val(POINT_1_Y, -4.36);
+    set_val(ACCEL_1_Y, 13.50);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 19.54);
+    set_val(POINT_1_Y, -12.43);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 5.37);
+    set_val(POINT_1_Y, -26.67);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -16.73);
+    set_val(POINT_1_Y, -33.90);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -43.30);
+    set_val(POINT_1_Y, -27.52);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -73.94);
+    set_val(POINT_1_Y, -10.73);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -94.58);
+    set_val(POINT_1_Y, 8.40);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, -94.58);
+    set_val(POINT_1_Y, 8.40);
+    set_val(ACCEL_1_Y, 0.00);
+    wait(10);
+}
