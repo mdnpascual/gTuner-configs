@@ -10,6 +10,7 @@ int long_bow_mode;
 int long_bow_toggle;
 int aim_throw_mode;
 int aim_throw_toggle;
+int last_range_weapon;
 
 init{
 	x_val = 0.0;
@@ -20,6 +21,7 @@ init{
 	long_bow_toggle = 0;
 	aim_throw_mode = 0;
 	aim_throw_toggle = 0;
+	last_range_weapon = 0;
 }
 main {
 	
@@ -55,9 +57,11 @@ main {
 	if(mouse_status(MBUTTON_2)){
 		if(mouse_status(MBUTTON_1)){
 			set_val(BUTTON_5, 100.00);
+			set_val(BUTTON_17, 0.00);
 		}
 		// Change Ranged Weapon
 		if(key_status(KEY_1)){
+			last_range_weapon = 1;
 			short_bow_toggle = 0;
 			set_val(BUTTON_10, 100.00);
 			// Short bow projectile selection
@@ -67,6 +71,7 @@ main {
 				set_val(BUTTON_14, 100.00);
 			}
 		} else if (key_status(KEY_2)){
+			last_range_weapon = 2;
 			aim_throw_toggle = 0;
 			set_val(BUTTON_12, 100.00);
 			// aim throwables projectile selection
@@ -78,6 +83,7 @@ main {
 				set_val(BUTTON_15, 100.00);
 			}
 		} else if (key_status(KEY_3)){
+			last_range_weapon = 3;
 			long_bow_toggle = 0;
 			set_val(BUTTON_13, 100.00);
 			// Long bow projectile selection
