@@ -1,0 +1,235 @@
+#pragma METAINFO("pc_auto", 1, 0, "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+#define Toggle_Key	BUTTON_16
+#define iToggleMax 2
+
+uint8 iToggle=1;
+
+bool ToggleKeyPressed=FALSE;
+
+uint8 one;
+uint8 two;
+uint8 three;
+uint8 four;
+uint8 five;
+uint8 six;
+uint8 seven;
+uint8 eight;
+uint32 oneDel;
+uint32 twoDel;
+uint32 threeDel;
+uint32 fourDel;
+uint32 fiveDel;
+uint32 sixDel;
+uint32 sevenDel;
+uint32 eightDel;
+uint32 maxTime;
+uint32 delay;
+uint32 sysTime;
+int16 randomDel;
+uint32 delayQ[64] = {4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295};
+int8 keyQ[64] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+int8 actionQ[64] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+int8 qSize;
+
+init {
+	maxTime = 4294967295;
+	oneDel = 4294967295;
+	twoDel = 4294967295;
+	threeDel = 4294967295;
+	fourDel = 4294967295;
+	fiveDel = 4294967295;
+	sixDel = 4294967295;
+	sevenDel = 4294967295;
+	eightDel = 4294967295;
+	qSize = 0;
+	delay = 426; // 5.5 SPEED 144HZ
+}
+
+int16 irand(int16 vmin, int16 vmax) {
+    return(((int16)(rand() * (fix32)(vmax + 1 - vmin))) + vmin);
+}
+
+void enqueue(int8 key, uint32 timestamp, int8 action){
+	keyQ[qSize] = key;
+	delayQ[qSize] = timestamp;
+	actionQ[qSize] = action;
+	qSize++;
+}
+
+void dequeue(uint8 i){
+	if(qSize > 0){
+		while (i < qSize){
+			keyQ[i] = keyQ[i + 1];
+			actionQ[i] = actionQ[i + 1];
+			delayQ[i] = delayQ[i + 1];
+			i++;
+		}
+		qSize--;
+	}
+}
+
+void clearQ(){
+	int i = 0;
+	if(qSize > 0){
+		dePressAll();
+		while (i < qSize){
+			dequeue(i);
+		}
+	}
+}
+
+void dePressAll(){
+		key_set(KEY_S, FALSE);
+		key_set(KEY_F, FALSE);
+		key_set(KEY_J, FALSE);
+		key_set(KEY_L, FALSE);
+		key_set(KEY_D, FALSE);
+		key_set(KEY_K, FALSE);
+		key_set(KEY_G, FALSE);
+		key_set(KEY_H, FALSE);
+}
+
+main {
+	if (!(get_val(Toggle_Key) == 100.0)) ToggleKeyPressed=FALSE; 
+	
+	if((get_val(Toggle_Key) == 100.0) && !ToggleKeyPressed){
+		
+		ToggleKeyPressed=TRUE;
+		iToggle=(iToggle+1) % clamp(iToggleMax,2,255);
+		
+	}
+	
+	// ENABLED
+	if (iToggle==1){
+	
+		if(gcv_ready()){
+			gcv_read(0, &one);
+			gcv_read(1, &two);
+			gcv_read(2, &three);
+			gcv_read(3, &four);
+			gcv_read(4, &five);
+			gcv_read(5, &six);
+			gcv_read(6, &seven);
+			gcv_read(7, &eight);
+		}
+		
+		sysTime = system_time();
+		randomDel = irand(1,21);
+		
+		if(oneDel == maxTime && one > 0){
+			enqueue(1, sysTime + delay, 1);
+			oneDel = sysTime;
+		} else if (oneDel != maxTime && one == 0){
+			enqueue(1, sysTime + delay + randomDel, 0);
+			oneDel = maxTime;
+		}
+		
+		if(twoDel == maxTime && two > 0){
+			enqueue(2, sysTime + delay, 1);
+			twoDel = sysTime;
+		} else if (twoDel != maxTime && two == 0){
+			enqueue(2, sysTime + delay + randomDel, 0);
+			twoDel = maxTime;
+		}
+
+		if(threeDel == maxTime && three > 0){
+			enqueue(3, sysTime + delay, 1);
+			threeDel = sysTime;
+		} else if (threeDel != maxTime && three == 0){
+			enqueue(3, sysTime + delay + randomDel, 0);
+			threeDel = maxTime;
+		}
+
+		if(fourDel == maxTime && four > 0){
+			enqueue(4, sysTime + delay, 1);
+			fourDel = sysTime;
+		} else if (fourDel != maxTime && four == 0){
+			enqueue(4, sysTime + delay + randomDel, 0);
+			fourDel = maxTime;
+		}
+
+		if(fiveDel == maxTime && five > 0){
+			enqueue(5, sysTime + delay, 1);
+			fiveDel = sysTime;
+		} else if (fiveDel != maxTime && five == 0){
+			enqueue(5, sysTime + delay + randomDel, 0);
+			fiveDel = maxTime;
+		}
+
+		if(sixDel == maxTime && six > 0){
+			enqueue(6, sysTime + delay, 1);
+			sixDel = sysTime;
+		} else if (sixDel != maxTime && six == 0){
+			enqueue(6, sysTime + delay + randomDel, 0);
+			sixDel = maxTime;
+		}
+
+		if(sevenDel == maxTime && seven > 0){
+			enqueue(7, sysTime + delay, 1);
+			sevenDel = sysTime;
+		} else if (sevenDel != maxTime && seven == 0){
+			enqueue(7, sysTime + delay + randomDel, 0);
+			sevenDel = maxTime;
+		}
+
+		if(eightDel == maxTime && eight > 0){
+			enqueue(8, sysTime + delay, 1);
+			eightDel = sysTime;
+		} else if (eightDel != maxTime && eight == 0){
+			enqueue(8, sysTime + delay + randomDel, 0);
+			eightDel = maxTime;
+		}
+		int i = 0;
+		while(i < qSize){
+			if(delayQ[i] <= sysTime){
+				uint8 key2press;
+				bool action;
+				switch(keyQ[i]){
+					case 1:
+						key2press = KEY_S;
+						break;
+					case 2:
+						key2press = KEY_F;
+						break;
+					case 3:
+						key2press = KEY_J;
+						break;
+					case 4:
+						key2press = KEY_L;
+						break;
+					case 5:
+						key2press = KEY_D;
+						break;
+					case 6:
+						key2press = KEY_K;
+						break;
+					case 7:
+						key2press = KEY_G;
+						break;
+					case 8:
+						key2press = KEY_H;
+						break;
+				}
+				switch(actionQ[i]){
+					case 1:
+						action = TRUE;
+						//printf("pressing");
+						break;
+					case 0:
+						action = FALSE;
+						//printf("releasing");
+						break;
+				}
+				key_set(key2press, action);
+				dequeue(i);
+			} else {
+				i++;
+			}
+		}
+	} else {
+		clearQ();
+	}
+}
