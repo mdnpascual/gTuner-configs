@@ -27,6 +27,7 @@ uint32 sevenDel;
 uint32 eightDel;
 uint32 maxTime;
 uint32 delay;
+uint32 sideDelay;
 uint32 sysTime;
 int16 randomDel;
 uint32 delayQ[64] = {4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295,4294967295};
@@ -45,7 +46,8 @@ init {
 	sevenDel = 4294967295;
 	eightDel = 4294967295;
 	qSize = 0;
-	delay = 426; // 5.5 SPEED 144HZ
+	delay = 428; // 5.5 SPEED 144HZ 428?
+	sideDelay = 0;
 }
 
 int16 irand(int16 vmin, int16 vmax) {
@@ -89,7 +91,7 @@ void dePressAll(){
 		key_set(KEY_D, FALSE);
 		key_set(KEY_K, FALSE);
 		key_set(KEY_G, FALSE);
-		key_set(KEY_H, FALSE);
+		key_set(KEY_BACKSLASH, FALSE);
 }
 
 main {
@@ -117,7 +119,7 @@ main {
 		}
 		
 		sysTime = system_time();
-		randomDel = irand(1,21);
+		randomDel = irand(1,11);
 		
 		if(oneDel == maxTime && one > 0){
 			enqueue(1, sysTime + delay, 1);
@@ -168,18 +170,18 @@ main {
 		}
 
 		if(sevenDel == maxTime && seven > 0){
-			enqueue(7, sysTime + delay, 1);
+			enqueue(7, sysTime + delay + sideDelay, 1);
 			sevenDel = sysTime;
 		} else if (sevenDel != maxTime && seven == 0){
-			enqueue(7, sysTime + delay + randomDel, 0);
+			enqueue(7, sysTime + delay + + sideDelay + randomDel, 0);
 			sevenDel = maxTime;
 		}
 
 		if(eightDel == maxTime && eight > 0){
-			enqueue(8, sysTime + delay, 1);
+			enqueue(8, sysTime + delay + sideDelay, 1);
 			eightDel = sysTime;
 		} else if (eightDel != maxTime && eight == 0){
-			enqueue(8, sysTime + delay + randomDel, 0);
+			enqueue(8, sysTime + delay + sideDelay + randomDel, 0);
 			eightDel = maxTime;
 		}
 		int i = 0;
@@ -210,7 +212,7 @@ main {
 						key2press = KEY_G;
 						break;
 					case 8:
-						key2press = KEY_H;
+						key2press = KEY_BACKSLASH;
 						break;
 				}
 				switch(actionQ[i]){
@@ -224,6 +226,7 @@ main {
 						break;
 				}
 				key_set(key2press, action);
+				key_set(KEY_SPACEBAR, action);
 				dequeue(i);
 			} else {
 				i++;
