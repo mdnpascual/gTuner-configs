@@ -1,0 +1,204 @@
+#pragma METAINFO("Horizon_forbidden_west_Helper", 1, 0, "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+int one_mode = 0;
+int one_toggle = 0;
+int one_max_ammo = 3;
+const int one_data[] = {-45, -100, 0, -100, 45, -100, -45, -100, 45, -100};
+int two_mode = 0;
+int two_toggle = 0;
+int two_max_ammo = 3;
+const int two_data[] = {-100, -15, -100, -45, -85, -80, -75, -75, -100, -10};
+int three_mode = 0;
+int three_toggle = 0;
+int three_max_ammo = 3;
+const int three_data[] = {100, -15, 100, -45, 85, -80, 75, -75, 100, -10};
+int four_mode = 0;
+int four_toggle = 0;
+int four_max_ammo = 3;
+const int four_data[] = {-100, 15, -100, 45, -85, 80, -75, 75, -100, 10};
+int five_mode = 0;
+int five_toggle = 0;
+int five_max_ammo = 3;
+const int five_data[] = {100, 15, 100, 45, 85, 80, 75, 75, 100, 10};
+int six_mode = 0;
+int six_toggle = 0;
+int six_max_ammo = 3;
+const int six_data[] = {-45, 100, 0, 100, 45, 100, -45, 100, 45, 100};
+int printToggle = 1;
+
+int toggle(int toggleVar, int max_ammo_type){
+	return (toggleVar + 1) % max_ammo_type;
+}
+
+int changeMaxAmmo(int max_ammo){
+	if(key_status(KEY_UPARROW) || key_status(KEY_DOWNARROW)){
+		printToggle = 0;
+
+		if(key_status(KEY_UPARROW)){
+			return 3;
+		} else if(key_status(KEY_DOWNARROW)) {
+			return 2;
+		}
+
+		resetMode();
+		
+	}
+	return max_ammo;
+}
+
+void resetMode(){
+	one_mode = 0;
+	two_mode = 0;
+	three_mode = 0;
+	four_mode = 0;
+	five_mode = 0;
+	six_mode = 0;
+}
+
+void setWheel(int X1, int Y1, int X2, int Y2, int X3, int Y3, int X4, int Y4, int X5, int Y5, int mode, int max_ammo){
+	if(max_ammo == 3){
+		if(mode == 0){
+			set_val(STICK_1_X, X1);
+			set_val(STICK_1_Y, Y1);
+		} else if (mode == 1){
+			set_val(STICK_1_X, X2);
+			set_val(STICK_1_Y, Y2);
+		} else if (mode == 2){
+			set_val(STICK_1_X, X3);
+			set_val(STICK_1_Y, Y3);
+		}
+	} else {
+		if(mode == 0){
+			set_val(STICK_1_X, X4);
+			set_val(STICK_1_Y, Y4);
+		} else if (mode == 1){
+			set_val(STICK_1_X, X5);
+			set_val(STICK_1_Y, Y5);
+		}
+	}
+}
+
+void printMaxAmmo(){
+	printf("Max Ammo Customization");
+	printf("__________[%d]__________", one_max_ammo);
+	printf("_______[%d]_____[%d]_____", two_max_ammo, three_max_ammo);
+	printf("_______[%d]_____[%d]_____", four_max_ammo, five_max_ammo);
+	printf("__________[%d]__________", six_max_ammo);
+}
+
+main {
+	
+	// AIMING
+	if(mouse_status(MBUTTON_2)){
+
+	}
+	
+	// Weapon Wheel
+	if (key_status(KEY_1)){
+		one_toggle = 0;
+		set_val(BUTTON_7, 100.0);
+
+		setWheel(one_data[0], one_data[1], one_data[2], one_data[3], one_data[4], one_data[5], one_data[6], one_data[7], one_data[8], one_data[9], one_mode, one_max_ammo);
+		one_max_ammo = changeMaxAmmo(one_max_ammo);
+		
+	} else if (key_status(KEY_2)){
+		two_toggle = 0;
+		set_val(BUTTON_7, 100.0);
+
+		setWheel(two_data[0], two_data[1], two_data[2], two_data[3], two_data[4], two_data[5], two_data[6], two_data[7], two_data[8], two_data[9], two_mode, two_max_ammo);
+		two_max_ammo = changeMaxAmmo(two_max_ammo);
+
+	} else if (key_status(KEY_3)){
+		three_toggle = 0;
+		set_val(BUTTON_7, 100.0);
+		
+		setWheel(three_data[0], three_data[1], three_data[2], three_data[3], three_data[4], three_data[5], three_data[6], three_data[7], three_data[8], three_data[9], three_mode, three_max_ammo);
+		three_max_ammo = changeMaxAmmo(three_max_ammo);
+
+	} else if (key_status(KEY_4)){
+		four_toggle = 0;
+		set_val(BUTTON_7, 100.0);
+		
+		setWheel(four_data[0], four_data[1], four_data[2], four_data[3], four_data[4], four_data[5], four_data[6], four_data[7], four_data[8], four_data[9], four_mode, four_max_ammo);
+		four_max_ammo = changeMaxAmmo(four_max_ammo);
+
+	} else if (key_status(KEY_5)){
+		five_toggle = 0;
+		set_val(BUTTON_7, 100.0);
+		
+		setWheel(five_data[0], five_data[1], five_data[2], five_data[3], five_data[4], five_data[5], five_data[6], five_data[7], five_data[8], five_data[9], five_mode, five_max_ammo);
+		five_max_ammo = changeMaxAmmo(five_max_ammo);
+
+	} else if (key_status(KEY_6)){
+		six_toggle = 0;
+		set_val(BUTTON_7, 100.0);
+		
+		setWheel(six_data[0], six_data[1], six_data[2], six_data[3], six_data[4], six_data[5], six_data[6], six_data[7], six_data[8], six_data[9], six_mode, six_max_ammo);
+		six_max_ammo = changeMaxAmmo(six_max_ammo);
+
+	}
+	
+	if (!key_status(KEY_1) && one_toggle == 0){
+		one_mode = toggle(one_mode, one_max_ammo);
+		one_toggle = 1;
+	} else if (!key_status(KEY_2) && two_toggle == 0){
+		two_mode = toggle(two_mode, two_max_ammo);
+		two_toggle = 1;
+	} else if (!key_status(KEY_3) && three_toggle == 0){
+		three_mode = toggle(three_mode, three_max_ammo);
+		three_toggle = 1;
+	} else if (!key_status(KEY_4) && four_toggle == 0){
+		four_mode = toggle(four_mode, four_max_ammo);
+		four_toggle = 1;
+	} else if (!key_status(KEY_5) && five_toggle == 0){
+		five_mode = toggle(five_mode, five_max_ammo);
+		five_toggle = 1;
+	} else if (!key_status(KEY_6) && six_toggle == 0){
+		six_mode = toggle(six_mode, six_max_ammo);
+		six_toggle = 1;
+	}
+	
+	if(!(key_status(KEY_UPARROW) || key_status(KEY_DOWNARROW)) && printToggle == 0){
+		printMaxAmmo();
+		printToggle = 1;
+	}
+	
+	// Show Full HUD
+	if(event_active(BUTTON_6)){
+		combo_run(Pad_Up);
+	}
+	
+}
+
+combo Pad_Up {
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.31);
+    set_val(POINT_1_Y, 68.33);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.83);
+    set_val(POINT_1_Y, 63.87);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -8.91);
+    set_val(POINT_1_Y, 20.72);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -6.93);
+    set_val(POINT_1_Y, -30.07);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 1.62);
+    set_val(POINT_1_Y, -80.45);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, 9.95);
+    set_val(POINT_1_Y, -91.92);
+    wait(10);
+}
