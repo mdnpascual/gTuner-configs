@@ -1,0 +1,48 @@
+#pragma METAINFO("GoW Ragnarok Helper", 1, , "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+main {
+	int32 mstatus;
+	uint32 time;
+	//set_val(STICK_1_X, 100.00);
+	// Chains spam charge
+	if(key_status(KEY_LEFTCONTROL) || mouse_status(MBUTTON_5)){
+		combo_run(Spam_Triangle);
+	}
+	
+	// M opens map directly
+	if(key_status(KEY_M)){
+		set_val(POINT_1_X, -100.00);
+		set_val(POINT_1_Y, 50.00);
+		set_val(BUTTON_19, 100.00);
+	}
+	
+	// If RMB is held, Inhibit right stick to use up and down dpad to change arrow equipped
+	if(mouse_status(MBUTTON_2)){
+		if (system_time() - time < 100){
+			set_val(STICK_1_Y, 0.00);
+		}
+	    if (mouse_status(MREPORT_UPDATED)) {
+			if (mstatus=mouse_status(MOUSE_WHEEL)) {
+				if(mstatus > -2 || mstatus < 2){
+					time = system_time();
+					combo_run(Up_Arrow);
+				}
+			}
+		}
+	}
+
+}
+
+combo Spam_Triangle {
+    set_val(BUTTON_14, 100.00);
+    wait(33);
+	set_val(BUTTON_14, 0.00);
+    wait(33);
+}
+
+combo Up_Arrow {
+	set_val(BUTTON_10, 100.00);
+	wait(33);
+}
