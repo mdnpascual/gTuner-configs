@@ -1,0 +1,76 @@
+#pragma METAINFO("Returnal_Helper", 1, 01, "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+bool charging = FALSE;
+bool stopFiring = FALSE;
+bool firing = FALSE;
+uint32 time_counter = 0;
+uint32 time_last_inhibit = 0;
+
+main {
+	
+	time_counter += elapsed_time();
+	time_last_inhibit += elapsed_time();
+	
+	if(gcv_ready()) {
+        // Read the GCV feedback data into variables.
+        uint8 read = gcv_read(0);
+		if(read == 1 && time_counter > 2000){
+			stopFiring = TRUE;
+			time_last_inhibit = 0;
+		}
+		if (read == 2) {
+			time_counter = 0;
+			firing = TRUE;
+			stopFiring = FALSE;
+		}
+		if(time_last_inhibit > 1200){
+			stopFiring = FALSE;
+		}
+    }
+	
+	// AIMING
+	if(mouse_status(MBUTTON_2)){
+		set_val(BUTTON_8, 40.00);
+		// CHARGE AIM
+		if(mouse_status(MBUTTON_3)){
+			set_val(BUTTON_8, 100.00);
+			charging = TRUE;
+		// RELEASE CHARGE
+		}else if(charging && !mouse_status(MBUTTON_3)){
+			charging = FALSE;
+			combo_run(releaseCharge);
+		}else{
+			charging = FALSE;
+		}
+	}
+	
+	// OVERRIDE
+	if(mouse_status(MBUTTON_5)){
+		stopFiring = FALSE;
+		firing = FALSE;
+		time_counter = 0;
+	}
+	
+	// COMPUTER VISION
+	if(stopFiring){
+		//printf("inhibiting");
+		set_val(BUTTON_5, 0.00);
+	}else if(firing){
+		//printf("firing");
+		combo_run(fireOverload);
+		firing = FALSE;
+	}
+}
+
+combo releaseCharge {
+	set_val(BUTTON_8, 100.00);
+	set_val(BUTTON_5, 100.0);
+	wait(40);
+}
+
+combo fireOverload {
+	set_val(BUTTON_5, 100.0);
+	wait(40);
+}

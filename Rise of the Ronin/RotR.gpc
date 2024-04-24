@@ -1,0 +1,73 @@
+#pragma METAINFO("rise of the ronin helper", 1, 0, "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+#define Toggle_Key  KEY_C
+#define Toggle_Key2  KEY_LEFTALT
+
+bool Toggle = FALSE;
+bool ToggleKeyPressed=FALSE;
+
+main {
+	int32 mstatus;
+	
+	// when key is not active:  reset Pressed flag to allow toggle again
+    if (!key_status(Toggle_Key) && !key_status(Toggle_Key2)) ToggleKeyPressed=FALSE; 
+		
+	if((key_status(Toggle_Key) || key_status(Toggle_Key2)) && !ToggleKeyPressed){ 
+		
+		Toggle = !Toggle;
+		ToggleKeyPressed=TRUE;
+		
+		if (Toggle){
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, -1.0, 0);
+			led_set(LED_3, 0.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}else{
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, 0.0, 0);
+			led_set(LED_3, -1.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}
+		
+	}
+	
+	if (Toggle && get_val(STICK_2_Y) == -100.0){	set_val(STICK_2_Y, -40); }
+	if (Toggle && get_val(STICK_2_X) == -100.0){	set_val(STICK_2_X, -40); }
+	if (Toggle && get_val(STICK_2_Y) == 100.0){		set_val(STICK_2_Y, 40); }
+	if (Toggle && get_val(STICK_2_X) == 100.0){		set_val(STICK_2_X, 40); }	
+	
+	// AIMING
+	if(mouse_status(MBUTTON_5)){
+		if(mouse_status(MBUTTON_1)){
+			set_val(BUTTON_17, 0.00);
+			set_val(BUTTON_5, 100.00);
+		}
+	}
+	
+	if (mouse_status(MREPORT_UPDATED)) {
+        if (mstatus=mouse_status(MOUSE_WHEEL)) {
+            if (mstatus== 1) combo_run(SwapWeapon);
+            if (mstatus==-1) combo_run(SwapWeapon);
+        }
+    }
+	
+	// Handgun Reload
+	if(key_status(KEY_R)){ 
+		set_val(BUTTON_8, 40.00);
+	}
+}
+
+combo SwapWeapon{
+	set_val(BUTTON_4, 100);
+	wait(33);
+	set_val(BUTTON_4, 100);
+	set_val(BUTTON_10, 100);
+	wait(33);
+	set_val(BUTTON_4, 100);
+	set_val(BUTTON_10, 0);
+	wait(33);
+	set_val(BUTTON_4, 0);
+	wait(33);
+}
