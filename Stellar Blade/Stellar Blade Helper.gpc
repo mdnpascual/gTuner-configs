@@ -1,0 +1,272 @@
+#pragma METAINFO("stellar blade Helper", 1, , "mdnpascual")
+#include <keyboard.gph>
+#include <mouse.gph>
+
+#define Toggle_Key  KEY_C
+#define Toggle_Key2  KEY_LEFTALT
+
+bool Toggle = FALSE;
+bool ToggleKeyPressed=FALSE;
+
+uint8 cast_action;
+uint8 hook_action;
+uint8 fish_action;
+uint8 reel_action;
+uint8 lift_action;
+uint8 confirm_action;
+uint8 prev_state = 999;
+uint8 reel_angle = 1;
+fix32 computed = 0.0;
+uint32 lastClick = 0;
+fix32 squareVal = 100.0;
+
+main {
+	if(gcv_ready()) {
+		gcv_read(0, &cast_action);
+		gcv_read(1, &hook_action);
+		gcv_read(2, &fish_action);
+		gcv_read(3, &reel_action);
+		gcv_read(4, &lift_action);
+		gcv_read(5, &confirm_action);
+	}
+	//printf("%d,%d,%d,%d,%d,%d",cast_action,hook_action,fish_action,reel_action,lift_action,confirm_action);
+	if (cast_action > 0){
+		set_val(BUTTON_17, 0.0);
+		combo_run(Cast_Action);
+		prev_state = 1;
+	} else if (hook_action > 0){
+		set_val(BUTTON_17, 0.0);
+		combo_run(Hook_Action);
+		prev_state = 2;
+	} else if (fish_action > 0 || prev_state == 3){
+		prev_state = 3;
+
+		if (lastClick + 30 < system_time()){
+			lastClick = system_time();
+			if (squareVal > 1.0) squareVal = 0.0;
+			else squareVal = 100.0;
+		}
+		set_val(BUTTON_17, squareVal);
+		if (fish_action == 1) set_val(STICK_2_X, 100.00);
+		if (fish_action == 2) set_val(STICK_2_X, -100.00);
+	}
+	if (reel_action > 0 || prev_state == 4){
+		set_val(BUTTON_17, 0.0);
+		set_val(BUTTON_5, byteAngleToButtonPress((fix32)reel_action));
+		prev_state = 4;
+		reel_angle = reel_action * 160 / 255;
+	}
+	if (lift_action > 0){
+		set_val(BUTTON_17, 0.0);
+		combo_run(Lift_Action);
+		prev_state = 5;
+	} else if (confirm_action > 0){
+		set_val(BUTTON_17, 0.0);
+		combo_run(Confirm_Action);
+		prev_state = 6;
+	}
+
+	else if (prev_state == 3)
+
+	// AIMING
+	if(mouse_status(MBUTTON_5)){
+		if(mouse_status(MBUTTON_1)){
+			set_val(BUTTON_17, 0.00);
+			set_val(BUTTON_5, 100.00);
+		}
+	}
+
+	// when key is not active:  reset Pressed flag to allow toggle again
+	if (!key_status(Toggle_Key) && !key_status(Toggle_Key2)) ToggleKeyPressed=FALSE;
+	if((key_status(Toggle_Key) || key_status(Toggle_Key2)) && !ToggleKeyPressed){
+
+		Toggle = !Toggle;
+		ToggleKeyPressed=TRUE;
+
+		if (Toggle){
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, -1.0, 0);
+			led_set(LED_3, 0.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}else{
+			led_set(LED_1, 0.0, 0);
+			led_set(LED_2, 0.0, 0);
+			led_set(LED_3, -1.0, 0);
+			led_set(LED_4, 0.0, 0);
+		}
+
+	}
+
+	if (Toggle && get_val(STICK_2_Y) == -100.0){	set_val(STICK_2_Y, -40); }
+	if (Toggle && get_val(STICK_2_X) == -100.0){	set_val(STICK_2_X, -40); }
+	if (Toggle && get_val(STICK_2_Y) == 100.0){		set_val(STICK_2_Y, 40); }
+	if (Toggle && get_val(STICK_2_X) == 100.0){		set_val(STICK_2_X, 40); }
+
+	// MAP
+	if(key_status(KEY_M)){
+		combo_run(Pad_Up);
+	}
+}
+
+fix32 byteAngleToButtonPress(fix32 input_angle){
+    // y = 25.29329 + 0.4620677*x - 0.002198412*x^2 + 0.000005813608*x^3
+	fix32 angleDivTen = input_angle / 10.0;
+    fix32 firstOrder = input_angle * 46.2;
+	firstOrder = firstOrder / 100.0;
+    fix32 secondOrder = angleDivTen * angleDivTen;
+	secondOrder = secondOrder * 0.22;
+    fix32 thirdOrder = angleDivTen * angleDivTen * angleDivTen;
+	thirdOrder = thirdOrder / 100.0;
+	thirdOrder = thirdOrder * 58.0;
+	thirdOrder = thirdOrder / 100.0;
+    fix32 offset = 25.293;
+    return clamp(offset + firstOrder - secondOrder + thirdOrder, 0.0, 100.0);
+}
+
+combo Fish_Action {
+	set_val(BUTTON_17, 100.00);
+	wait(40);
+	set_val(BUTTON_17, 0.00);
+	wait(40);
+}
+
+combo Confirm_Action {
+	set_val(BUTTON_16, 100.00);
+	wait(180);
+	set_val(BUTTON_16, 0.00);
+}
+
+combo Lift_Action {
+	set_val(BUTTON_14, 100.00);
+	wait(180);
+	set_val(BUTTON_14, 0.00);
+}
+
+combo Hook_Action {
+	set_val(BUTTON_5, 100.00);
+	wait(180);
+	set_val(BUTTON_5, 0.00);
+}
+
+combo Cast_Action {
+    set_val(STICK_2_Y, 0.39);
+    wait(390);
+    set_val(STICK_2_Y, 13.73);
+    wait(10);
+    set_val(STICK_2_Y, 27.06);
+    wait(10);
+    set_val(STICK_2_Y, 50.59);
+    wait(10);
+    set_val(STICK_2_Y, 67.06);
+    wait(10);
+    set_val(STICK_2_Y, 95.30);
+    wait(10);
+    set_val(STICK_2_Y, 100.00);
+    wait(580);
+    set_val(STICK_2_Y, 81.96);
+    wait(10);
+    set_val(STICK_2_Y, 18.43);
+    wait(10);
+    set_val(STICK_2_Y, -12.16);
+    wait(10);
+    set_val(STICK_2_Y, -82.75);
+    wait(10);
+    set_val(STICK_2_Y, -100.00);
+    wait(210);
+    set_val(STICK_2_Y, 6.67);
+    wait(10);
+    set_val(STICK_2_Y, 0.39);
+    wait(410);
+}
+
+
+combo Pad_Up {
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, -100.00);
+    set_val(POINT_1_Y, -100.00);
+    wait(50);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -49.45);
+    set_val(POINT_1_Y, 83.63);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -49.35);
+    set_val(POINT_1_Y, 83.21);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -49.24);
+    set_val(POINT_1_Y, 82.57);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -48.83);
+    set_val(POINT_1_Y, 81.30);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -48.62);
+    set_val(POINT_1_Y, 80.45);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -47.99);
+    set_val(POINT_1_Y, 77.68);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -47.58);
+    set_val(POINT_1_Y, 75.35);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -46.64);
+    set_val(POINT_1_Y, 69.82);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -46.01);
+    set_val(POINT_1_Y, 66.63);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -44.66);
+    set_val(POINT_1_Y, 58.13);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -43.82);
+    set_val(POINT_1_Y, 52.18);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -43.10);
+    set_val(POINT_1_Y, 47.50);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -41.22);
+    set_val(POINT_1_Y, 34.54);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -38.93);
+    set_val(POINT_1_Y, 19.45);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -37.36);
+    set_val(POINT_1_Y, 9.67);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -36.11);
+    set_val(POINT_1_Y, 3.08);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -32.78);
+    set_val(POINT_1_Y, -13.71);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -28.92);
+    set_val(POINT_1_Y, -30.50);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -26.42);
+    set_val(POINT_1_Y, -40.06);
+    wait(10);
+    set_val(BUTTON_19, 100.00);
+    set_val(POINT_1_X, -2.14);
+    set_val(POINT_1_Y, -100.00);
+    wait(10);
+    set_val(BUTTON_19, 0.00);
+    set_val(POINT_1_X, -100.00);
+    set_val(POINT_1_Y, -100.00);
+    wait(120);
+}
